@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from collections.abc import (
     Callable,
     Collection,
@@ -9,6 +8,7 @@ from collections.abc import (
     Iterable,
     Sequence,
 )
+import datetime
 from functools import wraps
 from itertools import zip_longest
 from sys import getsizeof
