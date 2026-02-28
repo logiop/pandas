@@ -1,3 +1,4 @@
+import datetime
 from collections import namedtuple
 from datetime import timedelta
 import re
@@ -1034,8 +1035,6 @@ def test_get_loc_namedtuple_behaves_like_tuple():
 def test_loc_datetime_date_index_with_np_datetime64():
     # GH#55969 - accessing a datetime.date MultiIndex level with np.datetime64
     # should respect subsequent key levels, not return all rows for the date.
-    import datetime
-
     dates = [
         datetime.date(2023, 11, 1),
         datetime.date(2023, 11, 1),
@@ -1045,7 +1044,7 @@ def test_loc_datetime_date_index_with_np_datetime64():
     t2 = ["C", "D", "E"]
     vals = [0.1, 0.2, 0.3]
 
-    df = pd.DataFrame({"dates": dates, "t1": t1, "t2": t2, "vals": vals})
+    df = DataFrame({"dates": dates, "t1": t1, "t2": t2, "vals": vals})
     df.set_index(["dates", "t1", "t2"], inplace=True)
 
     np_date = np.datetime64("2023-11-01")
