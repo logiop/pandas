@@ -3443,12 +3443,12 @@ class MultiIndex(Index):
                     datetime.datetime
                 )
                 if (
-                    py_val.hour == 0
-                    and py_val.minute == 0
-                    and py_val.second == 0
-                    and py_val.microsecond == 0
+                    py_val.hour == 0  # type: ignore[union-attr]
+                    and py_val.minute == 0  # type: ignore[union-attr]
+                    and py_val.second == 0  # type: ignore[union-attr]
+                    and py_val.microsecond == 0  # type: ignore[union-attr]
                 ):
-                    py_val = py_val.date()
+                    py_val = py_val.date()  # type: ignore[union-attr]
                 if py_val in lev:
                     lab = py_val
 
@@ -3519,12 +3519,12 @@ class MultiIndex(Index):
             key_ts = key.astype("datetime64[us]")
             py_val: datetime.datetime | datetime.date = key_ts.astype(datetime.datetime)
             if (
-                py_val.hour == 0
-                and py_val.minute == 0
-                and py_val.second == 0
-                and py_val.microsecond == 0
+                py_val.hour == 0  # type: ignore[union-attr]
+                and py_val.minute == 0  # type: ignore[union-attr]
+                and py_val.second == 0  # type: ignore[union-attr]
+                and py_val.microsecond == 0  # type: ignore[union-attr]
             ):
-                py_val = py_val.date()
+                py_val = py_val.date()  # type: ignore[union-attr]
             if py_val in level_index:
                 key = py_val
         return level_index.get_loc(key)
