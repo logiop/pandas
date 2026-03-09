@@ -1,0 +1,58 @@
+# Custom pre-commit hooks for pandas PR quality assurance
+# Add to .pre-commit-config.yaml:
+# - repo: local
+#   hooks:
+#   - id: pandas-test-verify
+#     name: Pandas Test Verification
+#     entry: python verify_pr.py
+#     language: python
+#     types: [python]
+#     stages: [commit]
+
+- id: pandas-test-verify
+  name: Pandas PR Comprehensive Verification
+  entry: python verify_pr.py --verbose
+  language: python
+  types: [python]
+  stages: [commit]
+  additional_dependencies: []
+  exclude: '^(build/|\.git/)'
+
+- id: pandas-indentation-check
+  name: Check test file indentation
+  entry: bash -c 'for f in "$@"; do python -m py_compile "$f" || exit 1; done' --
+  language: system
+  types: [python]
+  files: 'tests.*\.py$'
+
+- id: pandas-test-naming
+  name: Enforce test naming conventions
+  entry: python scripts/check_test_naming.py
+  language: system
+  files: '(tests|test_).*\.py$'
+  pass_filenames: false
+
+- id: pandas-regex-validation
+  name: Validate pytest.raises patterns
+  entry: bash -c '
+    for file in "$@"; do
+      if grep -q "pytest.raises.*match=" "$file" 2>/dev/null; then
+        python -c "
+import re
+import sys
+content = open(\"$file\").read()
+pattern = re.compile(r\"with\s+pytest\.raises\s*\([^)]+,\s*match\s*=\s*['\''\\\"']([^'\''\\\"]*)['\''\\\"]'\'')
+for match in pattern.finditer(content):
+    try:
+        re.compile(match.group(1))
+    except re.error as e:
+        line = content[:match.start()].count(\"\\n\") + 1
+        print(f\"ERROR: Invalid regex in $file:{line} - {e}\")
+        sys.exit(1)
+" || exit 1
+      fi
+    done
+  ' --
+  language: system
+  types: [python]
+  files: 'tests.*\.py$'
