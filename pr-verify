@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""
+Pandas PR Verification Command - Skill-like invocable tool
+
+Usage:
+    pr-verify [OPTIONS] [FILES]
+
+Options:
+    --help, -h              Show this help
+    --verbose, -v           Verbose output
+    --json                  JSON output
+    --fix                   Attempt to fix issues
+    --report FILE          Save report to FILE
+    --python VERSION       Test with Python version (3.11, 3.12)
+    --quick                Quick mode (skip slow checks)
+    --ci                   CI mode (structured output)
+    --file FILE            Check specific file
+    --dir DIRECTORY        Check specific directory
+
+Examples:
+    pr-verify                                    # Full check
+    pr-verify --verbose                         # With output
+    pr-verify --json > report.json              # JSON format
+    pr-verify --file pandas/tests/test_*.py     # Specific files
+    pr-verify --quick --verbose                 # Fast check
+    pr-verify --ci                              # CI mode
+
+Environment:
+    PANDAS_PATH             Path to pandas repo (default: /Users/logio/pandas)
+    VERIFY_VERBOSE         Set to 1 for verbose (same as --verbose)
+"""
+
+import sys
+import subprocess
+from pathlib import Path
+
+def main():
+    """Main entry point for pr-verify command."""
+
+    # Determine repo path
+    pandas_path = Path("/Users/logio/pandas")
+    if not (pandas_path / "verify_pr.py").exists():
+        print(f"ERROR: verify_pr.py not found in {pandas_path}")
+        return 1
+
+    # Build command
+    cmd = [sys.executable, str(pandas_path / "verify_pr.py")]
+
+    # Add arguments
+    cmd.extend(sys.argv[1:])
+
+    # Execute
+    try:
+        result = subprocess.run(cmd, cwd=pandas_path)
+        return result.returncode
+    except KeyboardInterrupt:
+        print("\n⚠️  Verification interrupted by user")
+        return 130
+    except Exception as e:
+        print(f"ERROR: {e}")
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())
